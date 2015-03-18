@@ -397,6 +397,7 @@ function _nearestExecutingScript() {
     //    // Should get `script[id="a"]` but will get `script[id="b"]` instead
     //    getCurrentScriptCallerFn();
     //    </script>
+    //    ```
     script = eligibleScripts[eligibleScripts.length - 1] || null;
   }
 

@@ -42,6 +42,8 @@ var scriptEl2 = currentExecutingScript.near();
 
 ### Farthest
 
+_**EXPERIMENTAL!!!**_
+
 To get the farthest (most shallow) scripts for the current call stack:
 
 ```js
