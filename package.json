@@ -1,0 +1,55 @@
+{
+  "name": "current-executing-script",
+  "title": "currentExecutingScript",
+  "version": "0.1.0",
+  "description": "Get the currently executing script, regardless of its source/trigger/synchronicity. Similar to HTML5's `document.currentScript` but arguably much more useful!",
+  "keywords": [
+    "browser",
+    "document",
+    "currentScript",
+    "currentExecutingScript",
+    "html",
+    "dom",
+    "html5",
+    "not-spec-compliant"
+  ],
+  "main": "./dist/currentExecutingScript.js",
+  "homepage": "https://github.com/JamesMGreene/currentExecutingScript",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/JamesMGreene/currentExecutingScript/blob/master/LICENSE"
+    }
+  ],
+  "author": {
+    "name": "James M. Greene",
+    "email": "james.m.greene@gmail.com",
+    "url": "http://greene.io/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JamesMGreene/currentExecutingScript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JamesMGreene/currentExecutingScript/issues"
+  },
+  "scripts": {
+    "test": "grunt travis --force --verbose"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-karma": "^0.10.1",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-qunit": "^0.1.4",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.2.10",
+    "karma-spec-reporter": "0.0.16",
+    "qunitjs": "^1.17.1"
+  }
+}
