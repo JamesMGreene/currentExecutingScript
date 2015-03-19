@@ -59,5 +59,13 @@
 
 
   /* Environments */
-  "browser": true
+  "browser": true,
+
+
+  /* Globals */
+  "globals": {
+    "define": false,
+    "exports": false,
+    "module": false
+  }
 }

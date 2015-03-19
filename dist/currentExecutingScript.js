@@ -4,10 +4,26 @@
  * Copyright (c) 2015 James M. Greene
  * Licensed MIT
  * https://github.com/JamesMGreene/currentExecutingScript
- * v0.1.0
+ * v0.1.1
  */
-(function(window, document) {
+(function(root, factory) {
+  if (typeof define === "function" && define.amd) {
+    // AMD. Register as an anonymous module.
+    define([], factory);
+  } else if (typeof exports === "object") {
+    // CommonJS-like environments that support `module.exports`,
+    // like Node.js. Does not work with strict CommonJS!
+    module.exports = factory();
+  } else {
+    // Browser globals (`root` is `window`)
+    root.currentExecutingScript = factory();
+  }
+}(
+  // Current context/scope
+  this || window,
 
+  // Factory function to return the export
+  function() {
 
 var scriptReadyRegex = /^(interactive|loaded|complete)$/;
 
@@ -23,6 +39,9 @@ var supportsScriptReadyState = "readyState" in (scripts[0] || document.createEle
 
 // Lousy browser detection for [not] Opera
 var isNotOpera = !window.opera || window.opera.toString() !== "[object Opera]";
+
+// Detect if `document.currentScript` is supported
+var hasNativeCurrentScriptAccessor = "currentScript" in document;
 
 var originalStackDepthConfig;
 // Detect if the V8 Error Stack Trace API is supported
@@ -344,8 +363,10 @@ function _nearestExecutingScript() {
     }
   }
 
+  //
   // Welcome to the Island of Inaccurate Assumptions!
   // NOTE: ALL of the following are loose assumptions that could be inaccurate!
+  //
 
   if (!script) {
     // Inaccuracies:
@@ -354,6 +375,26 @@ function _nearestExecutingScript() {
     //    e.g. `<a onclick="(function() { alert(currentExecutingScript()); }()">click</a>`
     if (eligibleScripts.length === 1) {
       script = eligibleScripts[0];
+    }
+  }
+
+  if (!script) {
+    // Inaccuracies:
+    //  - If script currently being synchronously evaluated by the parser is the
+    //    originator of this call stack but NOT the source script of the caller/invocation
+    //    e.g.
+    //    ```html
+    //    <script id="a">
+    //    function getCurrentScriptCallerFn() {
+    //      return currentExecutingScript.near();
+    //    }
+    //    </script>
+    //    <script id="b">
+    //    // Should get `script[id="a"]` but will get `script[id="b"]` instead
+    //    getCurrentScriptCallerFn();
+    //    </script>
+    if (hasNativeCurrentScriptAccessor) {
+      script = document.currentScript;
     }
   }
 
@@ -418,13 +459,18 @@ _nearestExecutingScript.skipStackDepth = 1;
 
 
 
-//
-// Export the API
-//
-window.currentExecutingScript        = _nearestExecutingScript;  // default
-window.currentExecutingScript.near   = _nearestExecutingScript;
-window.currentExecutingScript.far    = _farthestExecutingScript;
-window.currentExecutingScript.origin = _originatingExecutingScript;
+    //
+    // Export the API
+    //
+    var currentExecutingScript    = _nearestExecutingScript;      // default
+    currentExecutingScript.near   = _nearestExecutingScript;
+    currentExecutingScript.far    = _farthestExecutingScript;
+    currentExecutingScript.origin = _originatingExecutingScript;
 
 
-})(window || this || document.defaultView, document);
+    // Just return a value to define the module export.
+    // This example returns an object, but the module
+    // can return a function as the exported value.
+    return currentExecutingScript;
+  })
+);

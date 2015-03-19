@@ -14,9 +14,10 @@ This utility comprises a set of behaviors for detecting the currently **executin
 
 It can get the `script` element that was the source of the nearest (deepest) frame in the call stack (so, the currently executing code), regardless of whether or not said source script is being evaluated synchronously for the first time by the browser.
 
-It also has support for getting the `script` element that was the source of the farthest (most shallow) frame in the call stack, regardless of whether or not said source script is being evaluated synchronously for the first time by the browser.
+It also has experimental support for getting the `script` element that was the source of the farthest (most shallow) frame in the call stack, regardless of whether or not said source script is being evaluated synchronously for the first time by the browser.
 
 Finally, it has experimental support for getting the `script` element _or attribute node_ (e.g. `onclick`) responsible for creating the current call stack.
+
 
 ### Strict
 
@@ -26,6 +27,19 @@ If you are only interested in getting the currently **synchronously _evaluating_
 ## Browser Compatibility
 
 _Forthcoming...._
+
+
+## Installation
+
+### NPM
+
+```shell
+npm install current-executing-script
+```
+
+### GitHub
+
+Alternatively, you can download/clone its GitHub repo: [JamesMGreene/currentExecutingScript](https://github.com/JamesMGreene/currentExecutingScript)
 
 
 ## Usage
@@ -44,26 +58,35 @@ var scriptEl2 = currentExecutingScript.near();
 
 _**EXPERIMENTAL!!!**_
 
-To get the farthest (most shallow) scripts for the current call stack:
+To get the farthest (most shallow) script for the current call stack:
 
 ```js
 var scriptEl = currentExecutingScript.far();
 ```
 
-**IMPORTANT:** Note that the accuracy of this may be limited by the allowed stack depth of each browser. For example, Chrome defaults to collecting a maximum of the 10 nearest frames but [can be configured to collect more](https://code.google.com/p/v8-wiki/wiki/JavaScriptStackTraceApi) (see `Error.stackTraceLimit` and `--stack-trace-limit`).
+**IMPORTANT:** Note that the accuracy of this may be limited by the allowed stack depth of each browser. For example, Chrome defaults to collecting a maximum of the 10 nearest frames but [can be configured to collect more](https://code.google.com/p/v8-wiki/wiki/JavaScriptStackTraceApi) (see `Error.stackTraceLimit` and `--stack-trace-limit`). This library will automatically configure it to `Infinity` on your behalf.
 
 
 ### Origin
 
 _**EXPERIMENTAL!!!**_
 
-To get the script _or attribute node_ (e.g. `onclick`) responsible for creating the current call stack:
+To get the script _or attribute node_ (e.g. `onclick`) responsible for initiating the current call stack:
 
 ```js
 var scriptElOrAttrNode = currentExecutingScript.origin();
 ```
 
-**IMPORTANT:** Note that the accuracy of this may be limited by the allowed stack depth of each browser. For example, Chrome defaults to collecting a maximum of the 10 nearest frames but [can be configured to collect more](https://code.google.com/p/v8-wiki/wiki/JavaScriptStackTraceApi) (see `Error.stackTraceLimit` and `--stack-trace-limit`).
+In most situations, the result of `.origin()` will commonly match the result of `.far()` unless the current call stack was initiated by something other than a `script` element (e.g. an `onclick` attribute node).
+
+**IMPORTANT:** Note that the accuracy of this may be limited by the allowed stack depth of each browser. For example, Chrome defaults to collecting a maximum of the 10 nearest frames but [can be configured to collect more](https://code.google.com/p/v8-wiki/wiki/JavaScriptStackTraceApi) (see `Error.stackTraceLimit` and `--stack-trace-limit`). This library will automatically configure it to `Infinity` on your behalf.
+
+
+## Configuration
+
+### `skipStackDepth`
+
+The stack depth to skip over when analyzing call stack frames (defaults to `1`, to ensure it skips over its own functions).
 
 
 

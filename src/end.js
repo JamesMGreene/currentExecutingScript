@@ -1,11 +1,16 @@
 
-//
-// Export the API
-//
-window.currentExecutingScript        = _nearestExecutingScript;  // default
-window.currentExecutingScript.near   = _nearestExecutingScript;
-window.currentExecutingScript.far    = _farthestExecutingScript;
-window.currentExecutingScript.origin = _originatingExecutingScript;
+    //
+    // Export the API
+    //
+    var currentExecutingScript    = _nearestExecutingScript;      // default
+    currentExecutingScript.near   = _nearestExecutingScript;
+    currentExecutingScript.far    = _farthestExecutingScript;
+    currentExecutingScript.origin = _originatingExecutingScript;
 
 
-})(window || this || document.defaultView, document);
+    // Just return a value to define the module export.
+    // This example returns an object, but the module
+    // can return a function as the exported value.
+    return currentExecutingScript;
+  })
+);

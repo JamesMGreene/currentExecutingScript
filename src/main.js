@@ -15,6 +15,9 @@ var supportsScriptReadyState = "readyState" in (scripts[0] || document.createEle
 // Lousy browser detection for [not] Opera
 var isNotOpera = !window.opera || window.opera.toString() !== "[object Opera]";
 
+// Detect if `document.currentScript` is supported
+var hasNativeCurrentScriptAccessor = "currentScript" in document;
+
 var originalStackDepthConfig;
 // Detect if the V8 Error Stack Trace API is supported
 if ("stackTraceLimit" in Error && Error.stackTraceLimit !== Infinity) {
@@ -335,8 +338,10 @@ function _nearestExecutingScript() {
     }
   }
 
+  //
   // Welcome to the Island of Inaccurate Assumptions!
   // NOTE: ALL of the following are loose assumptions that could be inaccurate!
+  //
 
   if (!script) {
     // Inaccuracies:
@@ -345,6 +350,26 @@ function _nearestExecutingScript() {
     //    e.g. `<a onclick="(function() { alert(currentExecutingScript()); }()">click</a>`
     if (eligibleScripts.length === 1) {
       script = eligibleScripts[0];
+    }
+  }
+
+  if (!script) {
+    // Inaccuracies:
+    //  - If script currently being synchronously evaluated by the parser is the
+    //    originator of this call stack but NOT the source script of the caller/invocation
+    //    e.g.
+    //    ```html
+    //    <script id="a">
+    //    function getCurrentScriptCallerFn() {
+    //      return currentExecutingScript.near();
+    //    }
+    //    </script>
+    //    <script id="b">
+    //    // Should get `script[id="a"]` but will get `script[id="b"]` instead
+    //    getCurrentScriptCallerFn();
+    //    </script>
+    if (hasNativeCurrentScriptAccessor) {
+      script = document.currentScript;
     }
   }
 
