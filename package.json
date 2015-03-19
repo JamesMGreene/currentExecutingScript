@@ -1,7 +1,7 @@
 {
   "name": "current-executing-script",
   "title": "currentExecutingScript",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Get the currently executing script, regardless of its source/trigger/synchronicity. Similar to HTML5's `document.currentScript` but arguably much more useful!",
   "keywords": [
     "browser",

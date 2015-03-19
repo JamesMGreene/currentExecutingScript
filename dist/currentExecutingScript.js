@@ -4,7 +4,7 @@
  * Copyright (c) 2015 James M. Greene
  * Licensed MIT
  * https://github.com/JamesMGreene/currentExecutingScript
- * v0.1.1
+ * v0.1.2
  */
 (function(root, factory) {
   if (typeof define === "function" && define.amd) {
