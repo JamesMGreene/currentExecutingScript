@@ -2,8 +2,10 @@ language: node_js
 node_js:
   - "0.10"
 before_install:
+  - npm update -g npm
   - npm install -g grunt-cli
 
+sudo: false
 env:
   global:
     - secure: fqJFSqdASyXXg9J+Xyn3nbklRQ45uYRm7AmWBKE72lFtbIGNkQ/apSRPahkA6vDx9ZTyJSgRndBa8VM2MN8RR7HvAi9Q6QsljbneHxI8/u2S4Eg7Yntek6N850jfdaJBwROHfaPa+JNsQ/bL44NZJZeHhQv/fYGCr0VENmWh5LM=
