@@ -1,5 +1,5 @@
-/*jshint node:true, maxstatements: false, maxlen: false */
-/*global JSON:false */
+/*jshint node:true, maxstatements:false, maxlen:false */
+/*global JSON */
 
 var fs = require("fs");
 var path = require("path");
@@ -56,19 +56,23 @@ module.exports = function(config, gruntConfigOverride) {
 
 
     // test results reporter to use
-    // possible values: "dots", "progress"
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["dots", "saucelabs"],
+    // built-in possible values: "dots", "progress"
+    // other available reporters: https://npmjs.org/browse/keyword/karma-reporter
+    reporters: ["spec", "saucelabs"],
 
 
     // web server port
     port: 9876,
 
+
+    // enable / disable colors in the output (reporters and logs)
     colors: true,
+
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
+
 
     sauceLabs: {
 
@@ -96,13 +100,24 @@ module.exports = function(config, gruntConfigOverride) {
 
     },
 
-    captureTimeout: 120000,
+    // To avoid DISCONNECTED messages when connecting to SauceLabs
+    // This seems to be especially important for old VMs like IE6 and IE7
+    browserDisconnectTimeout: 10000,      // default 2000
+    browserDisconnectTolerance: 2,        // default 0
+    browserNoActivityTimeout: 4 * 60000,  // default 10000
+    captureTimeout: 4 * 60000,            // default 60000
+
+    // Concurrency level (added in `karma@0.13.12`)
+    // how many browser should be started simultanous
+    concurrency: 5,  // SauceLabs open-source limitation
+
     customLaunchers: customLaunchers,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: Object.keys(customLaunchers),
     singleRun: true
+
   });
 };
 
@@ -115,6 +130,9 @@ module.exports = function(config, gruntConfigOverride) {
 function getFriendlyBrowser(browserName) {
   browserName = browserName || "";
   if (typeof browserName === "string" && browserName) {
+    if (browserName === "MicrosoftEdge") {
+      browserName = "edge";
+    }
     if (browserName === "internet explorer") {
       browserName = "ie";
     }
@@ -159,29 +177,33 @@ function prefixTag(tagValue, tagPrefix) {
 
 function generateCustomLaunchers() {
   var browsers = {
+    "MicrosoftEdge": {
+      "20.10240": ["Windows 10"]
+    },
     "internet explorer": {
       "11.0": ["Windows 8.1"],
       "10.0": ["Windows 8"],
       "9.0":  ["Windows 7"],
       "8.0":  ["Windows 7"],
       "7.0":  ["Windows XP"],
-      "6.0":  ["Windows XP"]
+      "6.0":  ["Windows XP"]   // IE6 tends to timeout and fail to connect
     },
     "firefox": {
-      "dev":  ["Windows 7", "OS X 10.9", "Linux"],
-      "beta": ["Windows 7", "OS X 10.9", "Linux"],
-      "":     ["Windows 7", "OS X 10.9", "Linux"]
+      "dev":  ["Windows 7", "OS X 10.10", "Linux"],
+      "beta": ["Windows 7", "OS X 10.10", "Linux"],
+      "":     ["Windows 7", "OS X 10.10", "Linux"]
     },
     "chrome": {
-      "dev":  ["Windows 7", "OS X 10.8", "Linux"],
-      "beta": ["Windows 7", "OS X 10.8", "Linux"],
-      "":     ["Windows 7", "OS X 10.8", "Linux"]
+      "dev":  ["Windows 7", "OS X 10.10", "Linux"],
+      "beta": ["Windows 7", "OS X 10.10", "Linux"],
+      "":     ["Windows 7", "OS X 10.10", "Linux"]
     },
     "safari": {
+      "9.0": ["OS X 10.11"],
       "8.0": ["OS X 10.10"],
       "7.0": ["OS X 10.9"],
       "6.0": ["OS X 10.8"],
-      "5.1": ["OS X 10.6", "Windows 7"]
+      "5.1": ["Windows 7"]
     },
     "opera": {
       "12.15": ["Linux"],
@@ -189,11 +211,13 @@ function generateCustomLaunchers() {
       "11.64": ["Windows 7"]
     },
     "android": {
+      "5.1": ["Linux"],
       "4.4": ["Linux"],
       "4.0": ["Linux"]
     },
     "iphone": {
-      "8.1": ["OS X 10.10"],
+      "9.2": ["OS X 10.10"],
+      "8.4": ["OS X 10.10"],
       "7.1": ["OS X 10.10"]
     }
   };

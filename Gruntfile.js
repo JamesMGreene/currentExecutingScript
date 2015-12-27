@@ -1,4 +1,7 @@
-/*jshint node:true, maxstatements: false, maxlen: false */
+/*jshint node:true, maxstatements:false, maxlen:false */
+
+var versionSync = require("local-version").sync;
+var semver = require("semver");
 
 module.exports = function(grunt) {
   "use strict";
@@ -65,32 +68,68 @@ module.exports = function(grunt) {
           configFile: "karma.conf-ci.js"
         }
       };
-      var maxConcurrency = 3;
-      var karmaConfCi = require("./" + taskConfig.ci.configFile);
-      var karmaCiTaskChain = [];
-      karmaConfCi(
-        {
-          set: function(conf) {
-            if (conf.browsers && conf.browsers.length > 0) {
-              for (var i = 0, len = conf.browsers.length; i < len; i += maxConcurrency) {
-                var target = {
-                  configFile: taskConfig.ci.configFile
-                };
-                target.browsers = conf.browsers.slice(i, i + maxConcurrency);
-                var targetName = "ci_" + ((i / maxConcurrency) + 1);
-                taskConfig[targetName] = target;
-                karmaCiTaskChain.push("karma:" + targetName);
+
+      // Support for `conf.concurrency` was added in `karma@0.13.12`
+      var karmaVersion = versionSync("karma");
+      if (semver.gte(karmaVersion, "0.13.12")) {
+        // Just use the built-in mechanism in Karma >= 0.13.12
+        grunt.registerTask("karma-ci-chain", ["karma:ci"]);
+      }
+      else {
+        var maxConcurrency = 1;
+        var karmaConfCi = require("./" + taskConfig.ci.configFile);
+        var karmaCiTaskChain = [];
+        karmaConfCi(
+          {
+            set: function(conf) {
+              if (typeof conf.concurrency === "number") {
+                maxConcurrency = conf.concurrency;
+              }
+
+              if (conf.browsers && conf.browsers.length > 0) {
+                var i, len, target, targetName,
+                    ie6Regex = /_ie_6\.0$/;
+
+                // Workaround for IE6 issue requires it to use the "jsonp-polling" transport:
+                //   https://github.com/karma-runner/karma/issues/983
+                var ie6Browsers = conf.browsers.filter(function(browserId) {
+                  return ie6Regex.test(browserId);
+                });
+                for (i = 0, len = ie6Browsers.length; i < len; i += maxConcurrency) {
+                  target = {
+                    configFile: taskConfig.ci.configFile
+                  };
+                  target.browsers = ie6Browsers.slice(i, i + maxConcurrency);
+                  target.transports = ["jsonp-polling"];
+                  targetName = maxConcurrency === 1 || len === 1 ? target.browsers[0] : "ci_ie6_" + ((i / maxConcurrency) + 1);
+                  taskConfig[targetName] = target;
+                  karmaCiTaskChain.push("karma:" + targetName);
+                }
+
+
+                var otherBrowsers = conf.browsers.filter(function(browserId) {
+                  return !ie6Regex.test(browserId);
+                });
+                for (i = 0, len = otherBrowsers.length; i < len; i += maxConcurrency) {
+                  target = {
+                    configFile: taskConfig.ci.configFile
+                  };
+                  target.browsers = otherBrowsers.slice(i, i + maxConcurrency);
+                  targetName = maxConcurrency === 1 || len === 1 ? target.browsers[0] : "ci_" + ((i / maxConcurrency) + 1);
+                  taskConfig[targetName] = target;
+                  karmaCiTaskChain.push("karma:" + targetName);
+                }
               }
             }
-          }
-        },
-        true
-      );
+          },
+          true
+        );
 
-      // `grunt-karma` does not correctly honor buffering launcher
-      // requests to the limit of maxConcurrency of a SauceLabs
-      // account, which usually results in lots of errors
-      grunt.registerTask("karma-ci-chain", karmaCiTaskChain);
+        // `grunt-karma` does not correctly honor buffering launcher
+        // requests to the limit of maxConcurrency of a SauceLabs
+        // account, which usually results in lots of errors
+        grunt.registerTask("karma-ci-chain", karmaCiTaskChain);
+      }
 
       return taskConfig;
     })()

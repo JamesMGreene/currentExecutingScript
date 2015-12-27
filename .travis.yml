@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "0.12"
 before_install:
   - npm update -g npm
   - npm install -g grunt-cli
@@ -10,3 +10,8 @@ env:
   global:
     - secure: fqJFSqdASyXXg9J+Xyn3nbklRQ45uYRm7AmWBKE72lFtbIGNkQ/apSRPahkA6vDx9ZTyJSgRndBa8VM2MN8RR7HvAi9Q6QsljbneHxI8/u2S4Eg7Yntek6N850jfdaJBwROHfaPa+JNsQ/bL44NZJZeHhQv/fYGCr0VENmWh5LM=
     - secure: aCeV5zn6vLa+37/ynQHbDHqETBV/mjeOqHqHx/5LA3IwfJvvBhnxX+KZ1mJLGzO1F8XqUJD1IpI4c2DLwR4Y+AyOskE9Q5501vjlUFmPdWWHQEjZ9QdzRnshAxaqqxa8wamSzSAy0OJNHnI7izu+GQ9HgyAmdOCx+XAkrgYOR8Q=
+
+# Do NOT build pushed git tags
+branches:
+  except:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+/

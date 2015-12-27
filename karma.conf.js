@@ -1,4 +1,4 @@
-/*jshint node:true, maxstatements: false, maxlen: false */
+/*jshint node:true, maxstatements:false, maxlen:false */
 
 var fs = require("fs");
 var path = require("path");
@@ -37,8 +37,8 @@ module.exports = function(config) {
     ],
 
     // test results reporter to use
-    // possible values: "dots", "progress"
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+    // built-in possible values: "dots", "progress"
+    // other available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ["spec"],
 
 
@@ -73,5 +73,6 @@ module.exports = function(config) {
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
+
   });
 };
