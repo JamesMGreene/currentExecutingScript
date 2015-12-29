@@ -1,7 +1,10 @@
-/*global QUnit, getScriptUrlFromStack, _nearestExecutingScript, _farthestExecutingScript, _originatingExecutingScript */
 /*jshint maxstatements:false */
+/*jshint maxstatements:false */
+/*global QUnit, getScriptUrlFromStack, _nearestExecutingScript, _farthestExecutingScript, _originatingExecutingScript */
 
 (function(module, test, skip) {
+  // Do NOT apply the `"use strict"` directive here as it will directly impact
+  // some of the utility of the module's exported functions!
   //"use strict";
 
   function cleanUrlPath(url) {
